@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import knight.arkham.helpers.GameData;
 import knight.arkham.helpers.GameDataHelper;
+import knight.arkham.screens.GameScreen;
 import knight.arkham.screens.MainMenuScreen;
 
 import static knight.arkham.helpers.Constants.GAME_DATA_FILENAME;
@@ -40,7 +41,7 @@ public class Nightmare extends Game {
 //        It is better to avoid using PPM to set up my viewport.
         viewport = new FitViewport(screenWidth / 32f, screenHeight / 32f, camera);
 
-        setScreen(new MainMenuScreen());
+        setScreen(new GameScreen());
     }
 
     public void quitTheGame() {

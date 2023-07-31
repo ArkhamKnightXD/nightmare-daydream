@@ -18,11 +18,15 @@ import knight.arkham.objects.Player;
 public class GameScreen extends ScreenAdapter {
     private final Nightmare game;
     private final OrthographicCamera camera;
-    private final TileMapHelper tileMapHelper;
-    private final World world;
+    private final TileMapHelper dayDreamMapHelper;
+    private final TileMapHelper nightmareMapHelper;
+    private final World daydreamWorld;
+    private final World nightmareWorld;
     private final TextureAtlas textureAtlas;
-    private final Player player;
+    private final Player daydreamPlayer;
+    private final Player nightmarePlayer;
     private boolean isDebug;
+    private boolean isNightmareMode;
 
     public GameScreen() {
         game = Nightmare.INSTANCE;
@@ -31,19 +35,24 @@ public class GameScreen extends ScreenAdapter {
 
         camera = game.camera;
 
-        world = new World(new Vector2(0, -40), true);
+        daydreamWorld = new World(new Vector2(0, -40), true);
+        nightmareWorld = new World(new Vector2(0, -40), true);
 
-        world.setContactListener(new GameContactListener());
+        daydreamWorld.setContactListener(new GameContactListener());
+        nightmareWorld.setContactListener(new GameContactListener());
 
         textureAtlas = new TextureAtlas("images/atlas/Mario_and_Enemies.pack");
 
         TextureRegion playerRegion = textureAtlas.findRegion("little_mario");
 
-        player = new Player(new Rectangle(450, 50, 32, 32), world, playerRegion);
+        daydreamPlayer = new Player(new Rectangle(450, 50, 16, 16), daydreamWorld, playerRegion);
+        nightmarePlayer = new Player(new Rectangle(450, 50, 16, 16), nightmareWorld, playerRegion);
 
-        game.saveGameData("GameScreen", player.getWorldPosition());
+        game.saveGameData("GameScreen", daydreamPlayer.getWorldPosition());
+        game.saveGameData("GameScreen", nightmarePlayer.getWorldPosition());
 
-        tileMapHelper = new TileMapHelper(world, textureAtlas, "maps/playground/test.tmx");
+        dayDreamMapHelper = new TileMapHelper(daydreamWorld, textureAtlas, "maps/playground/test.tmx");
+        nightmareMapHelper = new TileMapHelper(nightmareWorld, textureAtlas, "maps/playground/test2.tmx");
     }
 
     @Override
@@ -54,34 +63,43 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void render(float delta) {
 
-        if (game.setToDispose)
-            game.setScreen(new MainMenuScreen());
+        ScreenUtils.clear(0, 0, 0, 0);
 
-        else {
+        if (isNightmareMode){
 
-            tileMapHelper.update(delta, player, camera);
-
-            draw();
+            nightmareMapHelper.update(delta, nightmarePlayer, camera);
+            drawNightmareLevel();
+        }else {
+            dayDreamMapHelper.update(delta, daydreamPlayer, camera);
+            drawDaydreamLevel();
         }
+
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.F1))
             isDebug = !isDebug;
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.F2))
-            game.setToDispose = true;
+            isNightmareMode = !isNightmareMode;
 
         game.quitTheGame();
     }
 
-    private void draw() {
-
-        ScreenUtils.clear(0,0,0,0);
+    private void drawDaydreamLevel() {
 
         if (!isDebug)
-            tileMapHelper.draw(camera, player);
+            dayDreamMapHelper.draw(camera, daydreamPlayer);
 
         else
-            game.debugRenderer.render(world, camera.combined);
+            game.debugRenderer.render(daydreamWorld, camera.combined);
+    }
+
+    private void drawNightmareLevel() {
+
+        if (!isDebug)
+            nightmareMapHelper.draw(camera, nightmarePlayer);
+
+        else
+            game.debugRenderer.render(nightmareWorld, camera.combined);
     }
 
     @Override
@@ -92,8 +110,8 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void dispose() {
 
-        player.dispose();
+        daydreamPlayer.dispose();
         textureAtlas.dispose();
-        tileMapHelper.dispose();
+        dayDreamMapHelper.dispose();
     }
 }

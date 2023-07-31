@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 
 public class Constants {
     public static final String GAME_DATA_FILENAME = "nightmare-daydream";
-    public static final float PIXELS_PER_METER = 32f;
+    public static final float PIXELS_PER_METER = 16f;
     public static final int FULL_SCREEN_HEIGHT = Gdx.graphics.getHeight();
     public static final int FULL_SCREEN_WIDTH = Gdx.graphics.getWidth();
     public static final int MID_SCREEN_WIDTH = Gdx.graphics.getWidth()/ 2;
